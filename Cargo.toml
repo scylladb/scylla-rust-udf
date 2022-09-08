@@ -1,5 +1,19 @@
 [workspace]
 members = [
-    "scylla-bindgen",
+    "examples",
+    "scylla-udf",
+    "scylla-udf-macros",
     "scylla-cql",
+    "tests",
 ]
+
+[workspace.package]
+edition = "2021"
+version = "0.0.1"
+repository = "https://github.com/wmitros/scylla-rust-udf"
+license = "MIT OR Apache-2.0"
+rust-version = "1.66.1"
+
+[workspace.dependencies]
+scylla-udf = { path = "scylla-udf" }
+scylla-udf-macros = { path = "scylla-udf-macros" }

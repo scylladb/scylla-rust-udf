@@ -1,0 +1,22 @@
+[package]
+name = "tests"
+edition.workspace = true
+version.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+scylla-udf = { workspace = true }
+bigdecimal = "0.2.0"
+bytes = "1.2.1"
+chrono = "0.4"
+libc = "0.2.119"
+num-bigint = "0.3"
+uuid = "1.0"
+
+[[test]]
+name = "hygiene"
+path = "hygiene.rs"
+crate-type = ["cdylib"]

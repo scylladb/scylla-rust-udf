@@ -1,0 +1,61 @@
+name: Rust
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
+  rust_min: 1.66.1 # <- Update this when bumping up MSRV
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Format check
+      run: cargo fmt --verbose --all -- --check
+    - name: Setup wasm32-wasi
+      run: rustup target add wasm32-wasi
+    - name: Clippy check
+      run: cargo clippy --verbose --all-targets --target=wasm32-wasi -- -Aclippy::uninlined_format_args
+    - name: Build
+      run: cargo build --target=wasm32-wasi --verbose --all-targets
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup wasm32-wasi
+      run: rustup target add wasm32-wasi
+    - name: Setup wasmtime
+      run: curl https://wasmtime.dev/install.sh -sSf | bash
+    - name: Test
+      run: CARGO_TARGET_WASM32_WASI_RUNNER="/home/runner/.wasmtime/bin/wasmtime --invoke _start --allow-unknown-exports" cargo test --target=wasm32-wasi --all-targets
+
+  # Tests that our current minimum supported rust version compiles everything sucessfully
+  min_rust:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Rust ${{ env.rust_min }}
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ env.rust_min }}
+    - name: Print Rust version
+      run: rustc --version
+    - name: Setup wasm32-wasi
+      run: rustup target add wasm32-wasi
+    - name: MSRV cargo check
+      run: cargo check --verbose --all-targets --target=wasm32-wasi
+
+  # Tests that docstrings generate docs without warnings
+  cargo_docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Compile docs
+      run: RUSTDOCFLAGS=-Dwarnings cargo doc

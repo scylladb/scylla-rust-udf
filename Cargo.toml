@@ -3,7 +3,6 @@ members = [
     "examples",
     "scylla-udf",
     "scylla-udf-macros",
-    "scylla-cql",
     "tests",
 ]
 

@@ -1,0 +1,21 @@
+[package]
+name = "scylla-udf"
+edition.workspace = true
+version.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Proc macros for scylla rust UDFs bindings"
+readme = "../README.md"
+keywords = ["scylla", "udf"]
+categories = ["database", "wasm"]
+
+[dependencies]
+bigdecimal = "0.2.0"
+bytes = "1.2.1"
+chrono = "0.4"
+libc = "0.2.119"
+num-bigint = "0.3"
+scylla-udf-macros = { workspace = true }
+scylla-cql = "0.0.4"
+uuid = "1.0"

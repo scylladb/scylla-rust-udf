@@ -1,0 +1,65 @@
+[package]
+name = "examples"
+edition.workspace = true
+version.workspace = true
+repository.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+chrono = "0.4"
+bigdecimal = "0.2.0"
+num-bigint = "0.3"
+scylla-udf = { workspace = true }
+uuid = "1.0"
+
+[[example]]
+name = "add"
+path = "add.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "combine"
+path = "combine.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "commas"
+path = "commas.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "dbl"
+path = "dbl.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "fib"
+path = "fib.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "keys"
+path = "keys.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "len"
+path = "len.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "topn"
+path = "topn.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "udt"
+path = "udt.rs"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "wordcount"
+path = "wordcount.rs"
+crate-type = ["cdylib"]

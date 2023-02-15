@@ -9,7 +9,7 @@ members = [
 [workspace.package]
 edition = "2021"
 version = "0.0.1"
-repository = "https://github.com/wmitros/scylla-rust-udf"
+repository = "https://github.com/scylladb/scylla-rust-udf"
 license = "MIT OR Apache-2.0"
 rust-version = "1.66.1"
 

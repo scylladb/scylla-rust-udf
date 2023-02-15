@@ -1,5 +1,9 @@
 # Rust helper library for Scylla UDFs
 
+This crate allows writing pure Rust functions that can be used as Scylla UDFs.
+
+**Note: this crate is officially supported and ready to use. However, UDFs are still an experimental feature in ScyllaDB, and the crate has not been widely used, which is why it's still in beta and its API is subject to change. We appreciate bug reports and pull requests!**
+
 ## Usage
 
 ### Prerequisites

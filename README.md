@@ -105,8 +105,7 @@ If CQL types `T1`, `T2`, ... map to Rust types `RustT1`, `RustT2`, ..., you can 
 
 ### Nulls
 
-If a CQL Value of type T, that's mapped to type RustT, may be a null (possible in non-`RETURNS NULL ON NULL INPUT` UDFs),
-the type used in the Rust function should be Option\<RustT\>.
+If a CQL Value of type T that's mapped to type RustT may be a null (all parameter and return types in `CALLED ON NULL INPUT` UDFs), then the type used in the Rust function should be Option\<RustT\>.
 
 ## Contributing
 

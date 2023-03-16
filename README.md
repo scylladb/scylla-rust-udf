@@ -32,8 +32,10 @@ crate-type = ["cdylib"]
 3. Implement your package, exporting Scylla UDFs using the `scylla_udf::export_udf` macro.
 4. Build the package using the wasm32-wasi target:
 ```
-cargo build --target=wasm32-wasi
+RUSTFLAGS="-C link-args=-zstack-size=131072" cargo build --target=wasm32-wasi
 ```
+> **_NOTE:_** The default size of the stack in WASI (1MB) causes warnings about oversized allocations in Scylla, so we recommend setting the stack size to a lower value. This is done using the `RUSTFLAGS` environmental variable in the command above for a new size of 128KB, which should be enough for most use cases.
+
 5. Find the compiled `.wasm` binary. Let's assume it's `target/wasm32-wasi/debug/abc.wasm`.
 6. (optional) Optimize the binary using `wasm-opt -O3 target/wasm32-wasi/debug/abc.wasm` (can be combined with using `cargo build --release`  profile)
 7. Translate the binary into `wat`:

@@ -50,9 +50,10 @@ contain `'` characters, so it may be necessary to first replace them with `''`, 
 
 For example, if you have an [Rust UDF](examples/commas.rs) that joins a list of words using commas, you can create a Scylla UDF using the following statement:
 ```
-CREATE FUNCTION commas(string list<text>) CALLED ON NULL INPUT RETURNS text AS ' (module ...) '
+CREATE FUNCTION commas(string list<text>) CALLED ON NULL INPUT RETURNS text LANGUAGE wasm AS ' (module ...) '
 ```
 
+> **_NOTE:_** The LANGUAGE used for Wasm UDFs is `xwasm` instead of `wasm` in Scylla versions 5.1 and 5.2.
 
 ## CQL Type Mapping
 

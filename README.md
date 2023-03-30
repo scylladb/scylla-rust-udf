@@ -9,43 +9,52 @@ This crate allows writing pure Rust functions that can be used as Scylla UDFs.
 ### Prerequisites
 
 To use this helper library in Scylla you'll need:
-* Standard library for Rust `wasm32-wasi`
+* `cargo`
+  * Generating Wasm is also possible with just the rustc compiler, but the guide will assume that `cargo` is installed
+* Standard library for Rust `wasm32-wasi` target
   * Can be added in rustup installations using `rustup target add wasm32-wasi`
   * For non rustup setups, you can try following the steps at https://rustwasm.github.io/docs/wasm-pack/prerequisites/non-rustup-setups.html
   * Also available as an rpm: `rust-std-static-wasm32-wasi`
 * `wasm2wat` parser
-  * Available in many distributions in the `wabt` package
+  * Available in many distributions in the `wabt` package, which also provides the `wasm-strip` tool
+* (Optionally) `wasm-opt` tool for optimizing the Wasm binary
+  * Available in many distributions in the `binaryen` package
 
 ### Compilation
 
 We recommend a setup with cargo.
 
-1. Start with a library package
+1. Start with a library package:
 ```
-cargo new --lib
+cargo new --lib my_udf_library
 ```
-2. Add the following lines to the Cargo.toml to set the crate-type to cdylib
+2. Add the scylla-udf dependency:
+```
+cargo add scylla-udf
+```
+3. Add the following lines to the Cargo.toml to set the crate-type to cdylib:
 ```
 [lib]
 crate-type = ["cdylib"]
 ```
-3. Implement your package, exporting Scylla UDFs using the `scylla_udf::export_udf` macro.
-4. Build the package using the wasm32-wasi target:
+4. Implement your package, exporting Scylla UDFs using the `scylla_udf::export_udf` macro.
+5. Build the package using the wasm32-wasi target:
 ```
 RUSTFLAGS="-C link-args=-zstack-size=131072" cargo build --target=wasm32-wasi
 ```
 > **_NOTE:_** The default size of the stack in WASI (1MB) causes warnings about oversized allocations in Scylla, so we recommend setting the stack size to a lower value. This is done using the `RUSTFLAGS` environmental variable in the command above for a new size of 128KB, which should be enough for most use cases.
 
-5. Find the compiled `.wasm` binary. Let's assume it's `target/wasm32-wasi/debug/abc.wasm`.
-6. (optional) Optimize the binary using `wasm-opt -O3 target/wasm32-wasi/debug/abc.wasm` (can be combined with using `cargo build --release`  profile)
-7. Translate the binary into `wat`:
+6. Find the compiled `.wasm` binary. Let's assume it's `target/wasm32-wasi/debug/my_udf_library.wasm`.
+7. (optional) Optimize the binary using `wasm-opt -O3 target/wasm32-wasi/debug/my_udf_library.wasm -o target/wasm32-wasi/debug/my_udf_library.wasm` (can be combined with using `cargo build --release`  profile)
+8. (optional) Reduce the size of the binary using `wasm-strip target/wasm32-wasi/debug/my_udf_library.wasm`
+9. Translate the binary into `wat`:
 ```
-wasm2wat target/wasm32-wasi/debug/abc.wasm > target/wasm32/wasi/debug/abc.wat
+wasm2wat target/wasm32-wasi/debug/my_udf_library.wasm > target/wasm32/wasi/debug/my_udf_library.wat
 ```
 
 ### CQL Statement
 
-The resulting `target/wasm32/wasi/debug/abc.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
+The resulting `target/wasm32/wasi/debug/my_udf_library.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
 contain `'` characters, so it may be necessary to first replace them with `''`, so that they're usable in a CQL string.
 
 For example, if you have an [Rust UDF](examples/commas.rs) that joins a list of words using commas, you can create a Scylla UDF using the following statement:

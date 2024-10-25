@@ -49,10 +49,12 @@ jobs:
         toolchain: ${{ env.rust_min }}
     - name: Print Rust version
       run: rustc --version
+    - name: Use MSRV Cargo.lock
+      run: cp Cargo.lock.msrv Cargo.lock
     - name: Setup wasm32-wasi
       run: rustup target add wasm32-wasi
     - name: MSRV cargo check
-      run: cargo check --verbose --all-targets --target=wasm32-wasi
+      run: cargo check --verbose --all-targets --target=wasm32-wasi --locked
 
   # Tests that docstrings generate docs without warnings
   cargo_docs:

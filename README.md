@@ -49,12 +49,12 @@ RUSTFLAGS="-C link-args=-zstack-size=131072" cargo build --target=wasm32-wasi
 8. (optional) Reduce the size of the binary using `wasm-strip target/wasm32-wasi/debug/my_udf_library.wasm`
 9. Translate the binary into `wat`:
 ```
-wasm2wat target/wasm32-wasi/debug/my_udf_library.wasm > target/wasm32/wasi/debug/my_udf_library.wat
+wasm2wat target/wasm32-wasi/debug/my_udf_library.wasm > target/wasm32-wasi/debug/my_udf_library.wat
 ```
 
 ### CQL Statement
 
-The resulting `target/wasm32/wasi/debug/my_udf_library.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
+The resulting `target/wasm32-wasi/debug/my_udf_library.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
 contain `'` characters, so it may be necessary to first replace them with `''`, so that they're usable in a CQL string.
 
 For example, if you have an [Rust UDF](examples/commas.rs) that joins a list of words using commas, you can create a Scylla UDF using the following statement:

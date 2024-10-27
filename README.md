@@ -6,15 +6,20 @@ This crate allows writing pure Rust functions that can be used as Scylla UDFs.
 
 ## Usage
 
+> [!NOTE]
+> In Rust versions 1.77 and below, the WASI target was called `wasm32-wasi` instead of `wasm32-wasip1`.
+>
+> For more information, see https://blog.rust-lang.org/2024/04/09/updates-to-rusts-wasi-targets.html.
+
 ### Prerequisites
 
 To use this helper library in Scylla you'll need:
 * `cargo`
   * Generating Wasm is also possible with just the rustc compiler, but the guide will assume that `cargo` is installed
-* Standard library for Rust `wasm32-wasi` target
-  * Can be added in rustup installations using `rustup target add wasm32-wasi`
+* Standard library for Rust `wasm32-wasip1`
+  * Can be added in rustup installations using `rustup target add wasm32-wasip1`
   * For non rustup setups, you can try following the steps at https://rustwasm.github.io/docs/wasm-pack/prerequisites/non-rustup-setups.html
-  * Also available as an rpm: `rust-std-static-wasm32-wasi`
+  * Also available as an rpm: `rust-std-static-wasm32-wasip1`
 * `wasm2wat` parser
   * Available in many distributions in the `wabt` package, which also provides the `wasm-strip` tool
 * (Optionally) `wasm-opt` tool for optimizing the Wasm binary
@@ -38,23 +43,23 @@ cargo add scylla-udf
 crate-type = ["cdylib"]
 ```
 4. Implement your package, exporting Scylla UDFs using the `scylla_udf::export_udf` macro.
-5. Build the package using the wasm32-wasi target:
+5. Build the package using the wasm32-wasip1 target:
 ```
-RUSTFLAGS="-C link-args=-zstack-size=131072" cargo build --target=wasm32-wasi
+RUSTFLAGS="-C link-args=-zstack-size=131072" cargo build --target=wasm32-wasip1
 ```
 > **_NOTE:_** The default size of the stack in WASI (1MB) causes warnings about oversized allocations in Scylla, so we recommend setting the stack size to a lower value. This is done using the `RUSTFLAGS` environmental variable in the command above for a new size of 128KB, which should be enough for most use cases.
 
-6. Find the compiled `.wasm` binary. Let's assume it's `target/wasm32-wasi/debug/my_udf_library.wasm`.
-7. (optional) Optimize the binary using `wasm-opt -O3 target/wasm32-wasi/debug/my_udf_library.wasm -o target/wasm32-wasi/debug/my_udf_library.wasm` (can be combined with using `cargo build --release`  profile)
-8. (optional) Reduce the size of the binary using `wasm-strip target/wasm32-wasi/debug/my_udf_library.wasm`
+6. Find the compiled `.wasm` binary. Let's assume it's `target/wasm32-wasip1/debug/my_udf_library.wasm`.
+7. (optional) Optimize the binary using `wasm-opt -O3 target/wasm32-wasip1/debug/my_udf_library.wasm -o target/wasm32-wasip1/debug/my_udf_library.wasm` (can be combined with using `cargo build --release`  profile)
+8. (optional) Reduce the size of the binary using `wasm-strip target/wasm32-wasip1/debug/my_udf_library.wasm`
 9. Translate the binary into `wat`:
 ```
-wasm2wat target/wasm32-wasi/debug/my_udf_library.wasm > target/wasm32/wasi/debug/my_udf_library.wat
+wasm2wat target/wasm32-wasip1/debug/my_udf_library.wasm > target/wasm32-wasip1/debug/my_udf_library.wat
 ```
 
 ### CQL Statement
 
-The resulting `target/wasm32/wasi/debug/my_udf_library.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
+The resulting `target/wasm32-wasi/debug/my_udf_library.wat` code can now be used directly in a `CREATE FUNCTION` statement. The resulting code will most likely
 contain `'` characters, so it may be necessary to first replace them with `''`, so that they're usable in a CQL string.
 
 For example, if you have an [Rust UDF](examples/commas.rs) that joins a list of words using commas, you can create a Scylla UDF using the following statement:
@@ -125,9 +130,9 @@ In general, try to follow the same rules as in https://github.com/scylladb/scyll
 
 ### Testing
 
-This crate is meant to be compiled to a `wasm32-wasi` target and ran in a WASM runtime. The tests that use WASM-specific code will most likely not succeed when executed in a different way (in particular, with a simple `cargo test` command).
+This crate is meant to be compiled to a `wasm32-wasip1` target and ran in a WASM runtime. The tests that use WASM-specific code will most likely not succeed when executed in a different way (in particular, with a simple `cargo test` command).
 
 For example, if you have the [wasmtime](https://docs.wasmtime.dev/cli-install.html) runtime installed and in `PATH`, you can use the following command to run tests:
 ```text
-CARGO_TARGET_WASM32_WASI_RUNNER="wasmtime --allow-unknown-exports" cargo test --target=wasm32-wasi
+CARGO_TARGET_WASM32_WASI_RUNNER="wasmtime --allow-unknown-exports" cargo test --target=wasm32-wasip1
 ```
